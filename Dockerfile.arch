@@ -1,0 +1,18 @@
+
+# syntax=docker/dockerfile:1.3-labs
+FROM josh5/steam-headless:arch
+RUN cat <<EOF >>/etc/pacman.conf
+[archlinuxcn]
+Server = https://mirrors.ustc.edu.cn/archlinuxcn/\$arch
+EOF
+RUN <<EOF
+cp /etc/pacman.d/mirrorlist /tmp/mirrorlist.bak
+echo 'Server = https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch' > /etc/mirrorlist
+cat /tmp/mirrorlist.bak >> /etc/mirrorlist
+EOF
+RUN <<EOF
+pacman -Sy
+pacman -S --noconfirm --needed archlinuxcn-keyring gamescope aria2
+EOF
+ADD overlay/ /
+#RUN rm /etc/supervisor.d/xorg.ini
